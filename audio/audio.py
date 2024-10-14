@@ -7,7 +7,14 @@ import pyaudio
 import time
 from math import log10
 import audioop
+import RPi.GPIO as GPIO
 
+# GPIO CONFIG
+# RBPY Channels Start at 1 on left, 2 on right, and are even/odd
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup([11, 13, 15], GPIO.OUT, initial=GPIO.LOW)
+
+# PYAUDIO SETTINGS (WORKING)
 WIDTH = 2
 CHUNK = 1024
 FORMAT = pyaudio.paInt16
@@ -31,12 +38,17 @@ with wave.open('output.wav', 'wb') as wf:
         wf.writeframes(sample)
         rms = audioop.rms(sample, WIDTH) / 32767
         db = 20*log10(rms)
+        if (db > -10):
+            GPIO.output(11, GPIO.HIGH)
+        else:
+            GPIO.output(11, GPIO.LOW)
         print(f"RMS: {rms} DB: {db}")
         #print(sample)
 
     print('Done')
 
     stream.close()
+    GPIO.cleanup()
     #stream.stop_stream() # use close if blocking ?
     p.terminate()
 """
