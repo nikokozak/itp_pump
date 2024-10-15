@@ -12,7 +12,8 @@ import RPi.GPIO as GPIO
 # GPIO CONFIG
 # RBPY Channels Start at 1 on left, 2 on right, and are even/odd
 GPIO.setmode(GPIO.BOARD)
-GPIO.setup([11, 13, 15], GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup([11, 15], GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(7, GPIO.IN)
 
 # PYAUDIO SETTINGS (WORKING)
 WIDTH = 2
@@ -20,9 +21,13 @@ CHUNK = 1024
 FORMAT = pyaudio.paInt16
 CHANNELS = 1 if sys.platform == 'darwin' else 2
 RATE = 44100 
-RECORD_SECONDS = 5
+RECORD_SECONDS = 10 
 rms = 1
 
+while GPIO.input(7) == GPIO.LOW:
+    time.sleep(0.01)
+    print(f"GPIO: ", GPIO.input(7))
+    
 with wave.open('output.wav', 'wb') as wf:
     p = pyaudio.PyAudio()
     wf.setnchannels(CHANNELS)
@@ -38,7 +43,7 @@ with wave.open('output.wav', 'wb') as wf:
         wf.writeframes(sample)
         rms = audioop.rms(sample, WIDTH) / 32767
         db = 20*log10(rms)
-        if (db > -10):
+        if (db > -26):
             GPIO.output(11, GPIO.HIGH)
         else:
             GPIO.output(11, GPIO.LOW)
@@ -51,6 +56,7 @@ with wave.open('output.wav', 'wb') as wf:
     GPIO.cleanup()
     #stream.stop_stream() # use close if blocking ?
     p.terminate()
+    quit()
 """
     for _ in range(0, RATE // CHUNK * RECORD_SECONDS):
         sample = stream.read(CHUNK)
