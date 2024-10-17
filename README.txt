@@ -1,5 +1,12 @@
 Set up RBPi with Hotspot for internet connectivity
+Set up RBPi config 
+https://wiki.debian.org/SSH#Resolution_with_IPQoS_0x00 <- ssh freezing fix
+https://picockpit.com/raspberry-pi/tigervnc-and-realvnc-on-raspberry-pi-bookworm-os/ <- TigerVNC (don't do eth0, setup reboot running)
+
+
+
 Follow https://github.com/opencardev/snd-i2s_rpi to set up drivers and kernel
+
 
 run sudo modprobe snd-i2s_rpi
 after reboot
